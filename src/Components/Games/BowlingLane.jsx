@@ -1,6 +1,6 @@
 import React from 'react'
 import { RigidBody } from '@react-three/rapier'
-import { Bowling_Ball } from './Bowling_Ball' // Assuming you have the Bowling_Ball component.
+import { Bowling_Ball } from './Bowling_Ball'
 
 export function BowlingLane(props) {
   return (

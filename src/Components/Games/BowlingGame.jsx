@@ -1,5 +1,5 @@
 import React from 'react'
-import { Bowling_Ball } from './Bowling_ball'
+import { Bowling_Ball } from './Bowling_Ball'
 import { Pins } from './Pins'
 import { RigidBody } from '@react-three/rapier'
 import { BowlingLane } from './BowlingLane'
