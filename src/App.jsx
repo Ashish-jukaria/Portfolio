@@ -3,7 +3,7 @@ import { Suspense, useState } from 'react';
 import {Canvas} from '@react-three/fiber'
 import styled from 'styled-components'
 import Ground from './Components/Ground/Ground';
-import { OrbitControls ,KeyboardControls } from '@react-three/drei'
+import { OrbitControls ,KeyboardControls, Loader } from '@react-three/drei'
 import { Physics } from '@react-three/rapier';
 import { Character } from './Components/Character';
 import CharacterController from './Components/CharacterController/CharacterController';
@@ -58,6 +58,15 @@ function App() {
 
           </Suspense>
         </Canvas>
+        <Loader
+         
+         containerStyles={{backgroundColor:"black"}}
+         innerStyles={{backgroundColor:'white',width:"500px",height:"10px"}}
+         barStyles={{ backgroundColor: "green",height:"10px", width:"500px"}}
+         dataStyles={{ color: "white"}}     
+         dataInterpolation={(p) => `Loading Assets ${p.toFixed(2)}%`} // Custom text
+
+        />
         {id && <ProjectData setId={setId} id={id}/>}
         </KeyboardControls>
 
