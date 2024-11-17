@@ -22,6 +22,8 @@ export default function CharacterController() {
     const cameraLookAtWorldPosition=useRef(new Vector3())
     const cameraLookAt=useRef(new Vector3())
     const clicking=useRef(false)
+    const audio=useRef(new Audio('/Running.mp3'))
+    audio.current.loop=true
     useEffect(()=>{
 
         function handlemousedown(){
@@ -49,6 +51,15 @@ export default function CharacterController() {
             step: degToRad(0.1),
           },   })
     const [,get]=useKeyboardControls()
+
+    useEffect(() => {
+        if (animation === 'walk' || animation === 'run') {
+          audio.current.play();
+        } else {
+          audio.current.pause();
+          audio.current.currentTime = 0; // Reset sound to the beginning
+        }
+      }, [animation]);
     useFrame(({ camera }) => {
         if (charbody.current){
             const vel=charbody.current.linvel();
@@ -88,6 +99,7 @@ export default function CharacterController() {
                 else{
                     setanimation('walk')
                 }
+
 
             }
             else{
