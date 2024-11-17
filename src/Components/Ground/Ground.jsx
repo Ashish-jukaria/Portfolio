@@ -11,7 +11,7 @@ export default function Ground() {
     <>
       <RigidBody  type="fixed" colliders="cuboid">
     <mesh name='ground' rotation={[-Math.PI/2,0,0]}>
-        <planeGeometry args={[500,300]}   />
+        <planeGeometry args={[600,300]}   />
         <meshBasicMaterial color='#F8EBC1' side={THREE.DoubleSide}/>
     </mesh>
 

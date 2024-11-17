@@ -7,10 +7,10 @@ export default function BowlingGame() {
   return (
 
     <group>
-        <BowlingLane rotation={[0,-30,0]} position={[-180,0,0]} />
+        <BowlingLane rotation={[0,-30,0]} position={[-220,0,0]} />
 
 
-        <Pins position={[-240,0,-9]}/>
+        <Pins position={[-280,0,-9]}/>
     </group>
       
   )

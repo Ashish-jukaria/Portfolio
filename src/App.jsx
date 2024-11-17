@@ -15,6 +15,7 @@ import BreakWall from "./Components/Games/BreakWall";
 import BreakWallContainer from "./Components/Games/BreakWallContainer";
 import BowlingGame from "./Components/Games/BowlingGame";
 import { BowlingLane } from "./Components/Games/BowlingLane";
+import ContactMe from "./Components/ContactMe/ContactMe";
 
 const CanvasContainer = styled.div`
   width: 100%;
@@ -50,6 +51,7 @@ function App() {
                 <About />
                 <BreakWallContainer />
                 <BowlingGame />
+                <ContactMe/>
               </Physics>
             </Suspense>
           </Canvas>

@@ -79,6 +79,12 @@ export default function About() {
         depth:1
     })
 
+    const contactGameGeometry = new TextGeometry(" Let's Connect ", {
+      font:font,
+      size:5,
+      depth:1
+  })
+
 
   return (
     <RigidBody type='fixed'>
@@ -111,16 +117,20 @@ export default function About() {
       </mesh><mesh rotation={[0,-9.3,0]} position={[0,30,-10]}>
         <primitive object={aboutExpressskillsGeometry}/>
         <meshBasicMaterial color='black'/>
-      </mesh><mesh rotation={[0,-9.3,0]} position={[0,40,-10]}>
+      </mesh>
+      <mesh rotation={[0,-9.3,0]} position={[0,40,-10]}>
         <primitive object={aboutReactskillsGeometry}/>
         <meshBasicMaterial color='black'/>
-      </mesh><mesh rotation={[0,-9.3,0]} position={[-15,40,-10]}>
+      </mesh>
+      <mesh rotation={[0,-9.3,0]} position={[-15,40,-10]}>
         <primitive object={aboutMongoDBskillsGeometry}/>
         <meshBasicMaterial color='black'/>
-      </mesh><mesh rotation={[0,-9.3,0]} position={[-15,30,-10]}>
+      </mesh>
+      <mesh rotation={[0,-9.3,0]} position={[-15,30,-10]}>
         <primitive object={aboutPythonskillsGeometry}/>
         <meshBasicMaterial color='black'/>
-      </mesh><mesh rotation={[0,-9.3,0]} position={[-30,40,-10]}>
+      </mesh>
+      <mesh rotation={[0,-9.3,0]} position={[-30,40,-10]}>
         <primitive object={aboutJavascriptskillsGeometry}/>
         <meshBasicMaterial color='black'/>
       </mesh>
@@ -136,8 +146,12 @@ export default function About() {
         <meshBasicMaterial color='black'/>
       </mesh>
 
-      <mesh rotation={[0,-11,0]} position={[-150,30,40]}>
+      <mesh rotation={[0,-11,0]} position={[-190,30,40]}>
         <primitive object={aboutGameGeometry}/>
+        <meshBasicMaterial color='black'/>
+      </mesh>
+      <mesh rotation={[-Math.PI/2,Math.PI/2,Math.PI/2]} position={[-165,15,70]}>
+        <primitive object={contactGameGeometry}/>
         <meshBasicMaterial color='black'/>
       </mesh>
       </RigidBody>
