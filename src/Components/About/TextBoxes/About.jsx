@@ -141,7 +141,7 @@ export default function About() {
         
       </group>
 
-      <mesh rotation={[0,-9,0]} position={[60,30,40]}>
+      <mesh rotation={[0,-9.4,0]} position={[10,50,80]}>
         <primitive object={aboutProjectGeometry}/>
         <meshBasicMaterial color='black'/>
       </mesh>

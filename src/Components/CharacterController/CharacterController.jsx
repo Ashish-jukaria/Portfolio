@@ -1,133 +1,168 @@
-import React from 'react'
-import { Character } from '../Character'
-import { AnyCollider, CapsuleCollider, RigidBody } from '@react-three/rapier'
-import { useRef } from 'react'
-import {MathUtils, Vector3 } from 'three'
-import {useControls} from "leva"
-import {useFrame} from '@react-three/fiber'
-import { useKeyboardControls } from '@react-three/drei'
+import { useKeyboardControls } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import { CapsuleCollider, RigidBody } from "@react-three/rapier";
+import { useControls } from "leva";
+import { useEffect, useRef, useState } from "react";
+import { MathUtils, Vector3 } from "three";
 import { degToRad } from "three/src/math/MathUtils.js";
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { Character } from "../Character";
 
-export default function CharacterController() {
-    const rotationTarget=useRef(0)
-    const [animation,setanimation]=useState('idle')
-    const charbody=useRef()
-    const container=useRef()
-    const character=useRef()
-    const cameraTarget=useRef()
-    const cameraPosition=useRef()
-    const cameraWorldPosition=useRef(new Vector3())
-    const cameraLookAtWorldPosition=useRef(new Vector3())
-    const cameraLookAt=useRef(new Vector3())
-    const clicking=useRef(false)
-    const audio=useRef(new Audio('/Running.mp3'))
-    audio.current.loop=true
-    useEffect(()=>{
+const normalizeAngle = (angle) => {
+  while (angle > Math.PI) angle -= 2 * Math.PI;
+  while (angle < -Math.PI) angle += 2 * Math.PI;
+  return angle;
+};
 
-        function handlemousedown(){
-            clicking.current=true
+const lerpAngle = (start, end, t) => {
+  start = normalizeAngle(start);
+  end = normalizeAngle(end);
+
+  if (Math.abs(end - start) > Math.PI) {
+    if (end > start) {
+      start += 2 * Math.PI;
+    } else {
+      end += 2 * Math.PI;
+    }
+  }
+
+  return normalizeAngle(start + (end - start) * t);
+};
+
+export const CharacterController = () => {
+  const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED } = useControls(
+    "Character Control",
+    {
+      WALK_SPEED: { value: 10, min: 5, max: 20, step: 0.1 },
+      RUN_SPEED: { value: 20, min: 10, max: 40, step: 0.1 },
+      ROTATION_SPEED: {
+        value: degToRad(0.5),
+        min: degToRad(0.1),
+        max: degToRad(5),
+        step: degToRad(0.1),
+      },
+    }
+  );
+  const rb = useRef();
+  const container = useRef();
+  const character = useRef();
+
+  const [animation, setAnimation] = useState("idle");
+
+  const characterRotationTarget = useRef(0);
+  const rotationTarget = useRef(0);
+  const cameraTarget = useRef();
+  const cameraPosition = useRef();
+  const cameraWorldPosition = useRef(new Vector3());
+  const cameraLookAtWorldPosition = useRef(new Vector3());
+  const cameraLookAt = useRef(new Vector3());
+  const [, get] = useKeyboardControls();
+  const isClicking = useRef(false);
+
+  useEffect(() => {
+    const onMouseDown = (e) => {
+      isClicking.current = true;
+    };
+    const onMouseUp = (e) => {
+      isClicking.current = false;
+    };
+    document.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("mouseup", onMouseUp);
+    // touch
+    document.addEventListener("touchstart", onMouseDown);
+    document.addEventListener("touchend", onMouseUp);
+    return () => {
+      document.removeEventListener("mousedown", onMouseDown);
+      document.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener("touchstart", onMouseDown);
+      document.removeEventListener("touchend", onMouseUp);
+    };
+  }, []);
+
+  useFrame(({ camera, mouse }) => {
+    if (rb.current) {
+      const vel = rb.current.linvel();
+
+      const movement = {
+        x: 0,
+        z: 0,
+      };
+
+      if (get().forward) {
+        movement.z = 1;
+      }
+      if (get().backward) {
+        movement.z = -1;
+      }
+
+      let speed = get().run ? RUN_SPEED : WALK_SPEED;
+
+      if (isClicking.current) {
+        console.log("clicking", mouse.x, mouse.y);
+        if (Math.abs(mouse.x) > 0.1) {
+          movement.x = -mouse.x;
         }
-        function handlemouseup(){
-            clicking.current=false
+        movement.z = mouse.y + 0.4;
+        if (Math.abs(movement.x) > 0.5 || Math.abs(movement.z) > 0.5) {
+          speed = RUN_SPEED;
         }
-        document.addEventListener('mouseup',handlemouseup)
-        document.addEventListener('mousedown',handlemousedown)
+      }
 
-        return ()=>{
-            document.removeEventListener('mouseup',handlemouseup)
-            document.removeEventListener('mousedown',handlemousedown)
-        }
-        
-    },[])
-    const {WALK_SPEED,RUN_SPEED,ROTATION_SPEED}=useControls("Character Control",{
-        WALK_SPEED: { value: 2, min: 0.1, max: 10, step: 0.1 },
-        RUN_SPEED: { value: 20, min: 0.2, max: 20, step: 0.1 }, 
-        ROTATION_SPEED: {
-            value: degToRad(0.5),
-            min: degToRad(0.1),
-            max: degToRad(5),
-            step: degToRad(0.1),
-          },   })
-    const [,get]=useKeyboardControls()
+      if (get().left) {
+        movement.x = 1;
+      }
+      if (get().right) {
+        movement.x = -1;
+      }
 
-    useEffect(() => {
-        if (animation === 'walk' || animation === 'run') {
-          audio.current.play();
+      if (movement.x !== 0) {
+        rotationTarget.current += ROTATION_SPEED * movement.x;
+      }
+
+      if (movement.x !== 0 || movement.z !== 0) {
+        characterRotationTarget.current = Math.atan2(movement.x, movement.z);
+        vel.x =
+          Math.sin(rotationTarget.current + characterRotationTarget.current) *
+          speed;
+        vel.z =
+          Math.cos(rotationTarget.current + characterRotationTarget.current) *
+          speed;
+        if (speed === RUN_SPEED) {
+          setAnimation("run");
         } else {
-          audio.current.pause();
-          audio.current.currentTime = 0; // Reset sound to the beginning
+          setAnimation("walk");
         }
-      }, [animation]);
-    useFrame(({ camera }) => {
-        if (charbody.current){
-            const vel=charbody.current.linvel();
-            const movement={
-                x:0,
-                z:0
-            }
-            if (get().forward){
-                movement.z=1
-            }
-            if (get().backward){
-                movement.z= -1
-            }  
+      } else {
+        setAnimation("idle");
+      }
+      character.current.rotation.y = lerpAngle(
+        character.current.rotation.y,
+        characterRotationTarget.current,
+        0.1
+      );
 
-            let speed=get().run?RUN_SPEED :WALK_SPEED
-            
-            if (get().left){
-                movement.x= 1
-            }   if (get().right){
-                movement.x=-1
-            }
-            if (movement.x!=0){
-                rotationTarget.current+=ROTATION_SPEED*movement.x
-            }
-            // if (clicking.current){
-            //     movement.x=mouse.x
-            //     movement.z=mouse.y
-            // }
+      rb.current.setLinvel(vel, true);
+    }
 
-            if (movement.x!==0 || movement.z!==0){
-                vel.x= speed*Math.sin(rotationTarget.current)
-                vel.z= speed*Math.cos(rotationTarget.current)
-              
-                if (speed==RUN_SPEED){
-                    setanimation('run')
-                }
-                else{
-                    setanimation('walk')
-                }
+    // CAMERA
+    container.current.rotation.y = MathUtils.lerp(
+      container.current.rotation.y,
+      rotationTarget.current,
+      0.1
+    );
 
+    cameraPosition.current.getWorldPosition(cameraWorldPosition.current);
+    camera.position.lerp(cameraWorldPosition.current, 0.1);
 
-            }
-            else{
-                setanimation('idle')
-            }
-            charbody.current.setLinvel(vel,true)
-        }
+    if (cameraTarget.current) {
+      cameraTarget.current.getWorldPosition(cameraLookAtWorldPosition.current);
+      cameraLookAt.current.lerp(cameraLookAtWorldPosition.current, 0.1);
 
-        container.current.rotation.y=MathUtils.lerp(container.current.rotation.y,rotationTarget.current,0.1)
-        // Ensure that the camera and its position are available
-        if (camera && camera.position) {
-          // Get world position of cameraPosition
-          cameraPosition.current.getWorldPosition(cameraWorldPosition.current);
-      
-          // Smoothly move camera to the target position
-          camera.position.lerp(cameraWorldPosition.current, 0.1);
-      
-          // Only perform the lookAt operation if cameraTarget exists
-          if (cameraTarget.current) {
-            cameraTarget.current.getWorldPosition(cameraLookAtWorldPosition.current);
-            cameraLookAt.current.lerp(cameraLookAtWorldPosition.current, 0.1);
-            camera.lookAt(cameraLookAt.current);
-          }
-        }
-      });
+      camera.lookAt(cameraLookAt.current);
+    }
+  });
       
   return (
-    <RigidBody colliders="cuboid" lockRotations ref={charbody}>
+    <RigidBody colliders="cuboid" lockRotations ref={rb}>
     <group ref={container} position={[0,0,-100]}>
     <group ref={cameraTarget} position-z={10} position-y={14} />
     <group ref={cameraPosition} position-y={20} position-z={-10} />

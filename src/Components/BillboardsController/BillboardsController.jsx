@@ -30,8 +30,13 @@ export default function BillboardsController({id,setId}) {
 
     </group>
     <group>
-    <Abandoned_billboard scale={1} position={[100,0,20]} texture={'/Course.jpeg'}/>
+    <Abandoned_billboard scale={1} position={[100,0,10]} texture={'/Course.jpeg'}/>
     
+    </group>
+
+    <group>
+    <Abandoned_billboard scale={1} position={[180,0,10]} texture={'/chathub.png'}/>
+
     </group>
 
     {/* <group>
@@ -51,6 +56,8 @@ export default function BillboardsController({id,setId}) {
    </RigidBody >
    <Project1 handleClick={handleClick} />
    <Project2 handleClick={handleClick} />
+   <Project3 handleClick={handleClick} />
+
    {/* <Project3 handleClick={handleClick} />
    <Project4 handleClick={handleClick} /> */}
 

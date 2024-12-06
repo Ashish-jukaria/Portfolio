@@ -6,7 +6,7 @@ import Ground from "./Components/Ground/Ground";
 import { OrbitControls, KeyboardControls, Loader } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import { Character } from "./Components/Character";
-import CharacterController from "./Components/CharacterController/CharacterController";
+import {CharacterController} from "./Components/CharacterController/CharacterController";
 import BillboardsController from "./Components/BillboardsController/BillboardsController";
 import ProjectData from "./Components/ProjectData/ProjectData";
 import * as THREE from "three";

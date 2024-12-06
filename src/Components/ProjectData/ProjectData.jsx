@@ -2,6 +2,7 @@ import React from 'react';
 import {styled} from 'styled-components'
 import Project1Data from './ProjectsEach/Project1Data';
 import Project2Data from './ProjectsEach/Project2Data';
+import Project3Data from './ProjectsEach/Project3Data';
 const InfoContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -25,6 +26,9 @@ export default function ProjectData({ setId,id }) {
         return <Project1Data setId={setId} id={id}/>;
       case 2:
         return <Project2Data setId={setId} id={id}/>;
+      case 3:
+        return <Project3Data setId={setId} id={id}/>;
+
       default:
         return <p>No project selected</p>;
     }
